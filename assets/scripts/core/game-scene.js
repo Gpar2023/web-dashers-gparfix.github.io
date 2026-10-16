@@ -1832,6 +1832,7 @@ this._menuUpdateLogBtn = this.add.image(screenWidth - 30 - 50, 33, "GJ_WebSheet"
                 else level.description = (level.description || "").slice(0, -1);
             } else if (event.key === "Enter") {
                 this._activeInput = null;
+                if (window.MobileKeyboard) window.MobileKeyboard.hide();
             } else if (event.key.length === 1) {
                 if (this._activeInput === 'title' && level.levelName.length < 20) {
                     level.levelName += event.key;
@@ -1846,12 +1847,13 @@ this._menuUpdateLogBtn = this.add.image(screenWidth - 30 - 50, 33, "GJ_WebSheet"
         };
 
         window.addEventListener('keydown', keyHandler);
-        nameBox.on('pointerdown', () => { this._activeInput = 'title'; updateDisplay(); });
-        descBox.on('pointerdown', () => { this._activeInput = 'desc'; updateDisplay(); });
+        nameBox.on('pointerdown', () => { this._activeInput = 'title'; updateDisplay(); if (window.MobileKeyboard) window.MobileKeyboard.show(); });
+        descBox.on('pointerdown', () => { this._activeInput = 'desc'; updateDisplay(); if (window.MobileKeyboard) window.MobileKeyboard.show(); });
 
         const cleanup = () => {
             clearInterval(cursorInterval);
             window.removeEventListener('keydown', keyHandler);
+            if (window.MobileKeyboard) window.MobileKeyboard.hide();
             container.destroy();
             overlay.destroy();
             blocker.destroy();
@@ -2117,12 +2119,14 @@ this._menuUpdateLogBtn = this.add.image(screenWidth - 30 - 50, 33, "GJ_WebSheet"
       const _focusInput = () => {
         inputFocused = true;
         _startCursorBlink();
+        if (window.MobileKeyboard) window.MobileKeyboard.show({ enterHint: "search" });
       };
 
       const _blurInput = () => {
         inputFocused = false;
         _stopCursorBlink();
         _updateInputDisplay();
+        if (window.MobileKeyboard) window.MobileKeyboard.hide();
       };
       const inputHitZone = this.add.zone(
         innerPanelX + innerPanelW / 2, innerPanelY + innerPanelH / 2,
@@ -2932,10 +2936,12 @@ this._menuUpdateLogBtn = this.add.image(screenWidth - 30 - 50, 33, "GJ_WebSheet"
 
       const _focusTitle = () => {
         titleFocused = true;
+        if (window.MobileKeyboard) window.MobileKeyboard.show();
       };
 
       const _blurTitle = () => {
         titleFocused = false;
+        if (window.MobileKeyboard) window.MobileKeyboard.hide();
         if (!titleText.trim()) {
           titleText = "Player";
           titleTxt.setText("Player");
@@ -3592,6 +3598,7 @@ this._menuUpdateLogBtn = this.add.image(screenWidth - 30 - 50, 33, "GJ_WebSheet"
         if (this._iconTitleKeyHandler) {
           window.removeEventListener("keydown", this._iconTitleKeyHandler);
           this._iconTitleKeyHandler = null;
+          if (window.MobileKeyboard) window.MobileKeyboard.hide();
         }
         this._iconOverlay = null;
       };
@@ -5196,6 +5203,7 @@ _buildSettingsPopup() {
 
         const commitValue = () => {
             isFocused = false;
+            if (window.MobileKeyboard) window.MobileKeyboard.hide();
 
             let val;
             if (integer) {
@@ -5224,6 +5232,7 @@ _buildSettingsPopup() {
 
             isFocused = true;
             window._activeCustomInput = commitValue;
+            if (window.MobileKeyboard) window.MobileKeyboard.show({ mode: integer ? "numeric" : "decimal", commitOnBlur: true });
             
             internalString = ""; 
             updateDisplay();
@@ -5280,6 +5289,7 @@ _buildSettingsPopup() {
             if (dim) dim.off('pointerdown', outsideClickListener);
             if (window._activeCustomInput === commitValue) {
                 window._activeCustomInput = null;
+                if (window.MobileKeyboard) window.MobileKeyboard.hide();
             }
             originalDestroy.apply(container, args);
         };
